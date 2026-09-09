@@ -159,7 +159,9 @@ MainWindow::MainWindow(Document& document,
     Q_ASSERT(!sInstance);
     sInstance = this;
 
+#ifndef Q_OS_MAC
     setWindowIcon(QIcon::fromTheme(AppSupport::getAppID()));
+#endif
     setContextMenuPolicy(Qt::NoContextMenu);
 
     setupImporters();

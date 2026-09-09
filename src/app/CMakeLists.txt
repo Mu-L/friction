@@ -57,7 +57,8 @@ else()
 endif()
 
 if(APPLE)
-    set(ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/icons/${PROJECT_NAME}.icns)
+    set(ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/icons/macOS/Resources/${PROJECT_NAME}.icns)
+    set(ICON_CAR ${CMAKE_CURRENT_SOURCE_DIR}/icons/macOS/Resources/Assets.car)
     set(MACOSX_BUNDLE_BUNDLE_NAME "Friction")
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION})
     set(MACOSX_BUNDLE_LONG_VERSION_STRING ${PROJECT_VERSION})
@@ -65,7 +66,7 @@ if(APPLE)
     set(MACOSX_BUNDLE_COPYRIGHT ${PROJECT_COPYRIGHT})
     set(MACOSX_BUNDLE_GUI_IDENTIFIER ${PROJECT_IDENTIFIER})
     set(MACOSX_BUNDLE_ICON_FILE ${PROJECT_NAME})
-    set_source_files_properties(${ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(${ICON_FILE} ${ICON_CAR} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
     set(CMAKE_INSTALL_RPATH "@executable_path/../Frameworks")
 endif()
 
@@ -252,6 +253,10 @@ else()
     list(APPEND RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../docs/docs.qrc)
 endif()
 
+if(APPLE)
+    list(APPEND RESOURCES ${ICON_CAR})
+endif()
+
 add_executable(
     ${PROJECT_NAME}
     ${ICON_FILE}
@@ -263,6 +268,10 @@ add_executable(
 
 if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE TRUE)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND /usr/libexec/PlistBuddy -c "Delete :CFBundleIconName" "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist" || true
+        COMMAND /usr/libexec/PlistBuddy -c "Add :CFBundleIconName string friction" "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"
+    )
 endif()
 
 if(WIN32)
