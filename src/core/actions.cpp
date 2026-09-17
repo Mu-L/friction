@@ -774,9 +774,7 @@ eBoxOrSound *Actions::importFile(const QString &path,
                          UndoRedoStack::StackBlock();
     qsptr<eBoxOrSound> result;
     const QFile file(path);
-    if (!file.exists()) {
-        RuntimeThrow("File " + path + " does not exit.");
-    }
+    if (!file.exists()) { return nullptr; }
 
     QFileInfo fInfo(path);
 
